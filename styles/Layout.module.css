@@ -1,0 +1,13 @@
+.body {
+	background: #000000;
+	height: 100%;
+}
+.header {
+	display: flex;
+	display: -webkit-flex;
+}
+
+.page_content {
+	/* margin-top: 56px; */
+	text-align: center;
+}
