@@ -7,12 +7,12 @@ Type=simple
 User=ubuntu
 Group=ubuntu
 
-WorkingDirectory=/app/BusWeb/current
+WorkingDirectory=/app/BusWeb
 
 Environment=NODE_ENV=production
 Environment=PORT=3000
 
-ExecStart=/usr/bin/node /app/BusWeb/current/server.js
+ExecStart=/usr/bin/node /app/BusWeb/server.js
 
 Restart=on-failure
 RestartSec=5

@@ -38,17 +38,14 @@ pipeline {
           sh '''
             set -eu
 
-            release_path="$DEPLOY_DIR/releases/$BUILD_NUMBER"
             tar -C .next/standalone -czf - . | \
               ssh -o BatchMode=yes -o StrictHostKeyChecking=yes \
                 "$DEPLOY_USER@$DEPLOY_HOST" \
-                "mkdir -p '$release_path' && tar -xzf - -C '$release_path'"
+                "mkdir -p '$DEPLOY_DIR' && tar -xzf - -C '$DEPLOY_DIR'"
 
             ssh -o BatchMode=yes -o StrictHostKeyChecking=yes \
               "$DEPLOY_USER@$DEPLOY_HOST" \
               "set -eu
-               ln -sfn '$release_path' '$DEPLOY_DIR/.current-$BUILD_NUMBER'
-               mv -Tf '$DEPLOY_DIR/.current-$BUILD_NUMBER' '$DEPLOY_DIR/current'
                sudo -n systemctl restart '$SERVICE_NAME'
                sudo -n systemctl is-active --quiet '$SERVICE_NAME'"
           '''

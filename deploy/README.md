@@ -10,10 +10,10 @@ Set `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_DIR`, and `SERVICE_NAME` in `Jenkinsfi
 
 ## App server setup
 
-The example uses `/app/BusWeb`, user `ubuntu`, and service name `next-bus-app`. Create the release directory and give the deploy user ownership:
+The example deploys files directly into `/app/BusWeb`, using SSH user `ubuntu` and service name `next-bus-app`. Create the directory and give the deploy user ownership:
 
 ```bash
-sudo mkdir -p /app/BusWeb/releases
+sudo mkdir -p /app/BusWeb
 sudo chown -R ubuntu:ubuntu /app/BusWeb
 ```
 
@@ -33,6 +33,6 @@ Allow the Jenkins SSH user to run only these service commands without a password
 ubuntu ALL=(root) NOPASSWD: /usr/bin/systemctl restart next-bus-app, /usr/bin/systemctl is-active --quiet next-bus-app
 ```
 
-The first successful Jenkins deployment creates `/app/BusWeb/current` as a symlink to a versioned release. The service runs Next.js's standalone `server.js` from that symlink.
+Jenkins extracts the standalone build directly into `/app/BusWeb`. The service runs `/app/BusWeb/server.js`.
 
 After deployment, inspect logs with `sudo journalctl -u next-bus-app -f`. Use a reverse proxy such as Nginx and configure HTTPS for public access.
