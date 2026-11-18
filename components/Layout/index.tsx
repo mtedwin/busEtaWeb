@@ -18,7 +18,7 @@ export default function GeneralLayout({ children }: { children: any, }) {
             {<AppDrawer isOpened={isOpened} toggleDrawer={toggleDrawer}/>}
 
             <SearchAppBar toggleDrawer={toggleDrawer} />
-            <Container>
+            <Container maxWidth="lg">
                 {children}
             </Container>
             <PageFooter />

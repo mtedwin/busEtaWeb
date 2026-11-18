@@ -11,12 +11,10 @@ import { useBusSelectedStore } from '../stores/bus-select-store';
 import { useFontSelectedStore } from '../stores/font-size-store';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/system/Box';
-import Typography from '@mui/material/Typography';
 
 
 export default function AllBusPage() {
 
-    const [windowWidth, setWindowWidth] = useState(0);
     const [windowHeight, setWindowHeight] = useState(0);
     const [allBus, setAllBus] = useState<BusInfo[]>([]);
     const [showNoSearchResult, setShowNoSearchResult] = useState<boolean>(false);
@@ -31,54 +29,38 @@ export default function AllBusPage() {
     } = useBusSelectedStore()
 
     let resizeWindow = () => {
-        setWindowWidth(window.innerWidth);
         setWindowHeight(window.innerHeight);
     };
 
-    const Rows = ({ index, style }: { index: number, style: any }) => (
-        <div style={style}>
+    const Rows = ({ index, style }: { index: number, style: React.CSSProperties }) => {
+        const bus = allBus[index];
 
-            <Card sx={{
-                // minWidth: 200, 
-                bgcolor:
-                    (
-                        (index % 2) ?
-                            'primary.main' : '#90caf9'
-                    ),
-
-                color: ((index % 2) ? ('white') : ('black'))
-                // , margin: 0.3
-            }}>
-                <Typography sx={{ padding: 0 }}>
+        return (
+            <div className={styles.row} style={style}>
+                <Card className={styles.card} elevation={0}>
                     <CardActionArea
+                        className={styles.cardAction}
                         onClick={() => {
-                            // setSelectedBus(allBus[index]);
-                            setBusSelected(allBus[index]);
-                            // alert(allBus[index].route);
-                            router.push({
-                                pathname: '/BusLineDetailPage',
-                            });
+                            setBusSelected(bus);
+                            router.push({ pathname: '/BusLineDetailPage' });
                         }}
-                        sx={{ fontSize:  fontSizeSelected }}
+                        sx={{ fontSize: fontSizeSelected }}
                     >
-                        <CardContent>
-                            <div  >
-                                公司:{allBus[index].co}
-                                ---
-                                路線:{allBus[index].route}
+                        <CardContent className={styles.cardContent}>
+                            <div className={styles.routeHeader}>
+                                <span className={styles.company}>{bus.co}</span>
+                                <span className={styles.route}>{bus.route}</span>
                             </div>
-                            <div >
-                                由: {allBus[index].orig_tc}
-                            </div>
-                            <div >
-                                去: {allBus[index].dest_tc}
+                            <div className={styles.locations}>
+                                <span><span className={styles.label}>由</span>{bus.orig_tc}</span>
+                                <span><span className={styles.label}>往</span>{bus.dest_tc}</span>
                             </div>
                         </CardContent>
                     </CardActionArea>
-                </Typography>
-            </Card>
-        </div>
-    )
+                </Card>
+            </div>
+        );
+    }
 
     async function fetchData(thissearchText: string) {
         try {
@@ -121,16 +103,21 @@ export default function AllBusPage() {
                 </Box>
             ) : (
                 allBus.length ? (<>
-                    <div>巴士路線 {allBus.length} 條</div>
-
-                    <FixedSizeList
-                        height={windowHeight * 0.8}
-                        itemCount={allBus.length}
-                        itemSize={110}
-                        width={windowWidth * 0.9}
-                    >
-                        {Rows}
-                    </FixedSizeList>
+                    <section className={styles.page}>
+                        <div className={styles.heading}>
+                            <h1>巴士路線</h1>
+                            <span className={styles.count}>{allBus.length} 條</span>
+                        </div>
+                        <FixedSizeList
+                            className={styles.list}
+                            height={Math.max(windowHeight * 0.78, 240)}
+                            itemCount={allBus.length}
+                            itemSize={112}
+                            width="100%"
+                        >
+                            {Rows}
+                        </FixedSizeList>
+                    </section>
                 </>
                 ) : (<>
                     <Box display="flex" sx={{ justifyContent: 'center', padding: 5 }}>
@@ -141,4 +128,3 @@ export default function AllBusPage() {
         </>
     )
 }
-
