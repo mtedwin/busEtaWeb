@@ -44,7 +44,7 @@ export default function SettingPage() {
             </Box>
 
             <Box padding={2}>
-                版本 2.5
+                版本 2.6
             </Box>
 
         </GeneralLayout>
