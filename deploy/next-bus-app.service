@@ -4,18 +4,15 @@ After=network.target
 
 [Service]
 Type=simple
-# Set the user that should run the service (change this to your deploy user)
-User=youruser
-Group=www-data
+User=ubuntu
+Group=ubuntu
 
-# WorkingDirectory must point to the project root where package.json and .next live
-WorkingDirectory=/home/youruser/next-bus-app
+WorkingDirectory=/app/BusWeb/current
 
-# Optional environment file with NODE_ENV and PORT
-EnvironmentFile=/home/youruser/next-bus-app/deploy/env.production
+Environment=NODE_ENV=production
+Environment=PORT=3000
 
-# Use node to run the local next binary to avoid relying on npm in PATH
-ExecStart=/usr/bin/node ./node_modules/next/dist/bin/next start -p ${PORT}
+ExecStart=/usr/bin/node /app/BusWeb/current/server.js
 
 Restart=on-failure
 RestartSec=5

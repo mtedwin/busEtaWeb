@@ -1,45 +1,38 @@
-Systemd deployment for `next-bus-app`
+# Jenkins deployment for `next-bus-app`
 
-1. Copy the project to the server (or `git clone`) and place it in the desired folder, for example `/home/youruser/next-bus-app`.
+Jenkins builds the Next.js application on its Linux executor and transfers the standalone build to the app server. The app server does not need a Git checkout or package installation.
 
-2. Edit `deploy/next-bus-app.service` and `deploy/env.production` to set `User`, `Group`, and `WorkingDirectory` to your environment.
+## Jenkins setup
 
-3. On the server, install Node.js (Node 18 recommended) and install dependencies:
+Configure the Jenkins job to use the repository's `main` branch and `Jenkinsfile`. Install the **NodeJS** and **SSH Agent** plugins. Under **Manage Jenkins → Tools**, add a NodeJS installation named `NodeJS-22` (the name must match the `tools` block in the Jenkinsfile) and enable automatic installation. Add an **SSH Username with private key** credential with ID `prod-server-ssh`. The Jenkins executor also needs tar, SSH, and the server's verified host key in its `known_hosts`.
 
-```bash
-# example (Ubuntu)
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt-get install -y nodejs build-essential
+Set `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_DIR`, and `SERVICE_NAME` in `Jenkinsfile` to match your server. The Jenkins SSH user needs write access to `DEPLOY_DIR` and permission to restart and check only the app's systemd service without an interactive sudo prompt.
 
-cd /home/youruser/next-bus-app
-npm ci
-```
+## App server setup
 
-4. Build the app (ensure `node_modules` is present):
+The example uses `/app/BusWeb`, user `ubuntu`, and service name `next-bus-app`. Create the release directory and give the deploy user ownership:
 
 ```bash
-npm run build
+sudo mkdir -p /app/BusWeb/releases
+sudo chown -R ubuntu:ubuntu /app/BusWeb
 ```
 
-5. Ensure `public/data.json` and `public/routeDetails.json` exist (run seeders if necessary):
+Install Node.js on the app server to run the standalone app. The server does not need npm or a Git checkout.
 
-```bash
-npm run db:seed
-npm run db:seed-routes-fast
-```
-
-6. Copy the service file into systemd, enable and start it:
+Install the systemd service template and ensure it uses the same service name and paths:
 
 ```bash
 sudo cp deploy/next-bus-app.service /etc/systemd/system/next-bus-app.service
 sudo systemctl daemon-reload
-sudo systemctl enable next-bus-app.service
-sudo systemctl start next-bus-app.service
-sudo journalctl -u next-bus-app -f
+sudo systemctl enable next-bus-app
 ```
 
-7. (Optional) Use Nginx as reverse proxy and configure SSL with Certbot.
+Allow the Jenkins SSH user to run only these service commands without a password. Create/edit the sudoers entry with `sudo visudo -f /etc/sudoers.d/next-bus-app-deploy`:
 
-Notes:
-- The `ExecStart` uses the project's local `next` binary via Node: `/usr/bin/node ./node_modules/next/dist/bin/next start -p ${PORT}`. This avoids relying on `npm` or a global `next`.
-- If you prefer to run `npm start`, change `ExecStart` to `/usr/bin/npm start` and ensure `npm` is in PATH for the service user.
+```text
+ubuntu ALL=(root) NOPASSWD: /usr/bin/systemctl restart next-bus-app, /usr/bin/systemctl is-active --quiet next-bus-app
+```
+
+The first successful Jenkins deployment creates `/app/BusWeb/current` as a symlink to a versioned release. The service runs Next.js's standalone `server.js` from that symlink.
+
+After deployment, inspect logs with `sudo journalctl -u next-bus-app -f`. Use a reverse proxy such as Nginx and configure HTTPS for public access.
