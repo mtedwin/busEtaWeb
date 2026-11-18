@@ -31,6 +31,9 @@ export default function AppDrawer({ isOpened, toggleDrawer }: { isOpened: any, t
                     <li onClick={clearSearch}> <Link href="/">主頁</Link></li>
                     <li> <Link href="/BusLineDetailPage">巴士詳情</Link></li>
                     <li><Link href="/BookmarkPage">我的最愛</Link> </li>
+                    <li><Link href="/Setting">設定</Link> </li>
+
+
                 </ul>
             </Box>
         </Drawer>
