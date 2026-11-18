@@ -7,10 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:seed": "node ./scripts/seedAllBus.js"
-    ,"db:seed-routes": "node ./scripts/seedRouteDetails.js"
-    ,"db:seed-routes-fast": "node ./scripts/seedRouteDetails.concurrent.js"},
-    
+    "db:seed": "node ./scripts/seedAllBus.js",
+    "db:seed-routes": "node ./scripts/seedRouteDetails.js",
+    "db:seed-routes-fast": "node ./scripts/seedRouteDetails.concurrent.js"
+  },
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
@@ -35,7 +35,6 @@
     "react-dom": "18.2.0",
     "react-window": "^1.8.8",
     "react-window-infinite-loader": "^1.0.8",
-    "react-window-scroller": "^1.0.10",
     "save": "^2.9.0",
     "styled-components": "^5.3.6",
     "typescript": "4.8.4",
