@@ -37,7 +37,11 @@ export default function AllBusPage() {
 
         return (
             <div className={styles.row} style={style}>
-                <Card className={styles.card} elevation={0}>
+                <Card
+                    className={styles.card}
+                    elevation={0}
+                    sx={{ bgcolor: '#dddddd' }}
+                >
                     <CardActionArea
                         className={styles.cardAction}
                         onClick={() => {
